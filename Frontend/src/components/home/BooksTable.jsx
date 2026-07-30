@@ -4,7 +4,7 @@ import {AiOutlineEdit} from 'react-icons/ai';
 import {BsInfoCircle} from 'react-icons/bs';
 import { MdOutlineAddBox, MdOutlineDelete, MdOutlineAdd } from "react-icons/md";
 
-const Bookstable =({books}) =>{
+const BooksTable =({books}) =>{
     return(
                    <table className='w-full border-separate border-spacing-2'>
                 <thead>
@@ -62,4 +62,4 @@ const Bookstable =({books}) =>{
     )
 }
 
-export default BooksTable
+export default BooksTable;
