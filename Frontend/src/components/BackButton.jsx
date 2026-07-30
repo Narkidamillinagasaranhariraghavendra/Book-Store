@@ -6,12 +6,12 @@ const BackButton = ({destination ='/'}) => {
 
   return (
     <div className='flex'>
-        <link
+        <Link
         to={destination}
-        className='bg-sky-800 text-white px-4 py-1 rounded-1g w-fit'
+        className='bg-sky-800 text-white px-4 py-1 rounded-lg w-fit'
         >
             <BsArrowLeft className='text-2xl' />
-        </link>
+        </Link>
     </div>
   )
 }
