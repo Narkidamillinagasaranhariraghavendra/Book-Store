@@ -1,32 +1,30 @@
 import express from 'express';
-import {Book} from '../models/bookModel.js';
-const router=express.Router();
+import { Book } from '../models/bookModel.js';
+import { authMiddleware } from '../middleware/authMiddleware.js';
+const router = express.Router();
 
-//Route for save a new book
-router.post('/',async(request,response) => {
-    try{
-        if(
-            
-            !request.body.title||
-            !request.body.author||
+// Route for save a new book
+router.post('/', authMiddleware, async (request, response) => {
+    try {
+        if (
+            !request.body.title ||
+            !request.body.author ||
             !request.body.publishYear
-
-        ){
-            return response.status(400).send({
-                message:'send required files:title,author,publishyear',
+        ) {
+            return response.status(400).json({
+                message: 'send required files:title,author,publishyear',
             });
         }
-        const newBook={
-            title:request.body.title,
-            author:request.body.author,
-            publishYear:request.body.publishYear,
+        const newBook = {
+            title: request.body.title,
+            author: request.body.author,
+            publishYear: request.body.publishYear,
         };
-        const book=await Book.create(newBook);
-        return response.status(201).send(book);
-    }
-    catch(error){
+        const book = await Book.create(newBook);
+        return response.status(201).json(book);
+    } catch (error) {
         console.log(error.message);
-        response.status(500).send({message:error.message});
+        response.status(500).json({ message: error.message });
     }
 });
 //route for get all books from databse
@@ -60,52 +58,46 @@ router.get('/:id',async(request,response) =>{
         response.status(500).send({message:error.message});
     }
 });
-//Route for update a book
-router.put('/:id',async (request,response) =>{
-    try{
-
-        if(
-            
-            !request.body.title||
-            !request.body.author||
+// Route for update a book
+router.put('/:id', authMiddleware, async (request, response) => {
+    try {
+        if (
+            !request.body.title ||
+            !request.body.author ||
             !request.body.publishYear
-
-        ){
-            return response.status(400).send({
-                message:'send required files:title,author,publishYear',
+        ) {
+            return response.status(400).json({
+                message: 'send required files:title,author,publishYear',
             });
         }
-        const {id} = request.params;
-        const result=await Book.findByIdUpdate(id,request.body);
 
-        if (!result){
-            return response.status(404).json({message:'Book not found'});
+        const { id } = request.params;
+        const result = await Book.findByIdAndUpdate(id, request.body, { new: true });
+
+        if (!result) {
+            return response.status(404).json({ message: 'Book not found' });
         }
-        return response.status(200).send({message:'Book updated Successfully'});
-    }
-    catch(error){
+        return response.status(200).json(result);
+    } catch (error) {
         console.log(error.message);
-        response.status(500).send({message:error.message});
-
+        response.status(500).json({ message: error.message });
     }
 });
-//Delete book from the store
-router.delete('/:id',async(request,response) =>{
-    try{
-        const {id} = request.params;
-        const result=await Book.findByIdAndDelete(id);
 
-        if (!result){
-            return response.status(400).json({message:'Book not found'});
+// Delete book from the store
+router.delete('/:id', authMiddleware, async (request, response) => {
+    try {
+        const { id } = request.params;
+        const result = await Book.findByIdAndDelete(id);
+
+        if (!result) {
+            return response.status(400).json({ message: 'Book not found' });
         }
-        return response.status(200).seend({message:'Book Deleted Successfully'});
-
-    }
-    catch(error){
+        return response.status(200).json({ message: 'Book Deleted Successfully' });
+    } catch (error) {
         console.log(error.message);
-        response.status(500).send({message:error.message});
+        response.status(500).json({ message: error.message });
     }
-
-    });
+});
 
 export default router;
