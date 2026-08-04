@@ -1,7 +1,7 @@
 import React from 'react'
 import BackButton from '../components/BackButton';
 import Spinner from '../components/Spinner';
-import axios from 'axios';
+import api from '../services/api';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 
@@ -14,15 +14,15 @@ const DeleteBook = () => {
   const handleDeleteBook = () => {
     setLoading(true);
 
-    axios.delete(`http://localhost:5555/books/${id}`)
-      .then((response) => {
+    api.delete(`/books/${id}`)
+      .then(() => {
         setLoading(false);
         enqueueSnackbar('Book deleted successfully', { variant: 'success' });
         navigate('/');
       })
       .catch((error) => {
         setLoading(false);
-        enqueueSnackbar('Error', { variant: 'error' });
+        enqueueSnackbar(error.response?.data?.message || 'Error deleting book', { variant: 'error' });
         console.log(error);
       });
   };

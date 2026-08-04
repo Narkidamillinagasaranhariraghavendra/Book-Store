@@ -1,37 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import BackButton from '../components/BackButton';
 import Spinner from '../components/Spinner';
-import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
+import api from '../services/api';
+
 const EditBook = () => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [publishYear, setPublishYear] = useState('');
   const [loading, setLoading] = useState(false);
-  const {enqueueSnackbar} = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
 
   const navigate = useNavigate();
   const { id } = useParams();
 
   useEffect(() => {
     setLoading(true);
-    axios
-      .put(`http://localhost:5555/books/${id}`, { title, author, publishYear })
+    api
+      .get(`/books/${id}`)
       .then((response) => {
         setTitle(response.data.title);
         setAuthor(response.data.author);
         setPublishYear(response.data.publishYear);
-        setLoading(false);
-        enqueueSnackbar('Book Edited successfully',{variant:'success'});
       })
       .catch((error) => {
-        setLoading(false);
-        //alert('An error happened. Please check console');
-        enqueueSnackbar('Error',{variant:'error'});
+        enqueueSnackbar('Error loading book', { variant: 'error' });
         console.log(error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
-  }, []);
+  }, [id, enqueueSnackbar]);
 
   const handleSaveBook = () => {
     const data = {
@@ -42,15 +42,16 @@ const EditBook = () => {
 
     setLoading(true);
 
-    axios
-      .put(`http://localhost:5555/books/${id}`, data)
-      .then((response) => {
+    api
+      .put(`/books/${id}`, data)
+      .then(() => {
         setLoading(false);
+        enqueueSnackbar('Book updated successfully', { variant: 'success' });
         navigate('/');
       })
       .catch((error) => {
         setLoading(false);
-        alert('An error happened. Please check console');
+        enqueueSnackbar('Error updating book', { variant: 'error' });
         console.log(error);
       });
   };

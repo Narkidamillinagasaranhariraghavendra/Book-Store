@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import BackButton from '../components/BackButton';
 import Spinner from '../components/Spinner';
-import axios from 'axios';
+import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 const CreateBook = () => {
@@ -11,7 +11,7 @@ const CreateBook = () => {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const {enqueueSnackbar} = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleSaveBook = () => {
     const data = {
@@ -22,17 +22,16 @@ const CreateBook = () => {
 
     setLoading(true);
 
-    axios
-      .post('http://localhost:5555/books', data)
+    api
+      .post('/books', data)
       .then((response) => {
         setLoading(false);
-        enqueueSnackbar('Book created successfully',{variant:'success'});
+        enqueueSnackbar('Book created successfully', { variant: 'success' });
         navigate('/');
       })
       .catch((error) => {
         setLoading(false);
-        //alert('An error happened. Please check console');
-        enqueueSnackbar('Error',{variant:'error'});
+        enqueueSnackbar(error.response?.data?.message || 'Error creating book', { variant: 'error' });
         console.log(error);
       });
   };
